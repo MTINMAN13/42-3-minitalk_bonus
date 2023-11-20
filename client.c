@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mman <mman@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/20 21:24:18 by mman              #+#    #+#             */
+/*   Updated: 2023/11/20 21:24:23 by mman             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 // SO TO IMPLEMENT THE BONUS< I WILL FIRST TRACK THE LENGTH OF THE TRANSMISSION AND SEND IT AT THE BEGINNING OF THIS TRANSMISSION
 // THEN AFTER THE TRANSMISSION IS RECEIVED IN FULL< I WILL SEND BACK THE HANDSHAKE
 
-
 #include "minitalk.h"
+
 int	county(char	*input)
 {
 	unsigned char	bit;
@@ -30,13 +41,16 @@ int	county(char	*input)
 	return (trans_length);
 }
 
-void	send_signal(int pid,char *msg, int len)
+void	send_signal(int pid,char *msg)
 {
 	int				i; // Start from the most significant bit
 	unsigned char	bit;
 	unsigned char 	octet;
+	int				len;
 
 	i = 7;
+	octet = 0;
+	len = county(msg);
 	while (msg[i])
 	{
 		bit = (unsigned char)msg[i];
@@ -47,7 +61,7 @@ void	send_signal(int pid,char *msg, int len)
 				kill(pid, SIGUSR1);
 			else
 				kill(pid, SIGUSR2);
-			usleep(100);
+			// usleep(100);
 			i--;
 		}
 	ft_printf("\n");
@@ -85,10 +99,9 @@ int	main(int argc, char **argv)
 	i = 0;
 	while (str_send[i])
 	{
-		send_signal(pid, (unsigned char)str_send[i]);
+		send_signal(pid, str_send);
 		i++;
 	}
-	send_signal(pid, '\n');
 	ft_printf("CLIENT | Sending %d symbols:\nCLIENT | %s", i, argv[2]);
 	return (0);
 }
