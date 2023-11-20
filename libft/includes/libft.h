@@ -6,7 +6,7 @@
 /*   By: mman <mman@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 17:18:00 by mman              #+#    #+#             */
-/*   Updated: 2023/10/28 21:54:16 by mman             ###   ########.fr       */
+/*   Updated: 2023/11/20 20:03:54 by mman             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void				ft_handle_x(unsigned int num, const char format);
 int					ft_print_hex(unsigned int num, const char format);
 int					ft_hex_len(unsigned long num);
 unsigned long long	ft_numlen(long n, int base);
-void				ft_print_u(unsigned int n);
+void				ft_print_u(long n);
 int					ft_handle_u(unsigned int n);
 int					ft_handle_di(int i);
 int					ft_print_pointer(void *hi);

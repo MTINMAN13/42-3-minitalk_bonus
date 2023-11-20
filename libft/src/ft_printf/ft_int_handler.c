@@ -23,7 +23,7 @@ void	ft_putstr_fd(char *s, int fd)
 	}
 }
 
-void	ft_print_u(unsigned int n)
+void	ft_print_u(long n)
 {
 	unsigned int			len;
 	char					*ret;
