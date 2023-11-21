@@ -12,39 +12,39 @@
 
 #include "minitalk.h"
 
-volatile sig_atomic_t	g_bit_count = 0;
-
 // instead add sigemptyset if bitcount is (8)
 // otherwise do sigaddset 1 or 0
 
 // INSYEAD ONLY ONE GLOBAL VARIABLE/
 
+// void	handshake(siginfo_t *info, int starter)
+// {
+// 	static int	counter;
 
-void	handshake(siginfo_t *info, int starter)
-{
-	static int	counter;
+// 	counter = 0;
+// 	while (starter == 1)
+// 	{
+// 			++counter;
+// 		if (counter == 1000000000)
+// 		{
+// 			ft_printf("\nReceived from PID %d\n", info->si_pid);
+// 			kill(info->si_pid, SIGUSR2);
+// 			starter = 0;
+// 		}
+// 	}
+// }
 
-	counter = 0;
-	while (starter == 1)
-	{
-			++counter;
-		if (counter == 1000000000)
-		{
-			ft_printf("\nReceived from PID %d\n", info->si_pid);
-			kill(info->si_pid, SIGUSR2);
-			starter = 0;
-		}
-	}
-}
+
+// 1. i want to take all the octets, pass them to ascii
+// 2. i want to print this shit
+// 3. I want to bulk up the code to handle the PID of sending client, to retrieve it and then send a text back to client.
 
 void	handler(int signal, siginfo_t *info, void *context)
 {
 	int								decoded;
 	static volatile char			g_bit_buffer[7];
+	static volatile sig_atomic_t	g_bit_count = 0;
 
-
-	(void)info;
-	(void)context;
 	if (signal == SIGUSR1)
 		g_bit_buffer[g_bit_count] = '0';
 	else if (signal == SIGUSR2)
@@ -57,20 +57,16 @@ void	handler(int signal, siginfo_t *info, void *context)
 		ft_printf("%c", decoded);
 		g_bit_count = 0;
 	}
-	// handshake(info, 1);
+	(void)context;
+	(void)info->si_pid;
 }
-
-// 1. i want to take all the octets, pass them to ascii
-// 2. i want to print this shit
-
-// 3. I want to bulk up the code to handle the PID of sending client, to retrieve it and then send a text back to client.
 
 int	main(void)
 {
 	struct sigaction	sa;
 
-	sa.sa_sigaction = handler; // Use sa_sigaction instead of sa_handler
-	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = handler;
+	sa.sa_flags = 0;
 	if (sigaction(SIGUSR1, &sa, NULL) == -1)
 	{
 		ft_printf("Error setting up SIGUSR1 handler");

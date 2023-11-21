@@ -15,58 +15,52 @@
 
 #include "minitalk.h"
 
-int	county(char	*input)
+// TODO check if County + the new MSG merger work as intended
+// TODO check if the msg is combined and syntaxed properly
+// TODO check if its then properly parsed and sent
+
+size_t	county(const char *input)
 {
-	unsigned char	bit;
-	unsigned char	octet;
-	int				i;
-	int				j;
-	size_t			trans_length;
+	size_t				trans_length;
+	unsigned char		octet;
+	int					i;
 
 	if (!input)
-		return (0);
+		return 0;
 	trans_length = 0;
-	j = 0;
-	while (input[j])
+	while (*input)
 	{
-		octet = input[j];
+		octet = (unsigned char)(*input);
 		i = 7;
 		while (i >= 0)
 		{
-			bit = (octet >> i) & 1;
-			i--;
+			trans_length += (octet >> i) & 1;
+			--i;
 		}
-		j++;
+		++input;
 	}
+
 	return (trans_length);
 }
 
-void	send_signal(int pid,char *msg)
-{
+void	send_signal(int pid, unsigned char octet) {
 	int				i; // Start from the most significant bit
 	unsigned char	bit;
-	unsigned char 	octet;
-	int				len;
 
 	i = 7;
-	octet = 0;
-	len = county(msg);
-	while (msg[i])
+	while (i >= 0)
 	{
-		bit = (unsigned char)msg[i];
-		while (i >= 0)
-		{
-			bit = (octet >> i) & 1; // Extract the i-th bit
-			if (bit == 0)
-				kill(pid, SIGUSR1);
-			else
-				kill(pid, SIGUSR2);
-			// usleep(100);
-			i--;
-		}
-	ft_printf("\n");
-	i++;
+		bit = (octet >> i) & 1; // Extract the i-th bit
+		if (bit == 0)
+			kill(pid, SIGUSR1);
+		else
+			kill(pid, SIGUSR2);
+		usleep(100);
+		// ft_printf("%i", bit);
+		// ft_printf("Currently sending %i\n", bit);
+		i--; // Move to the next bit
 	}
+	ft_printf("\n");
 }
 
 void	ft_error(int num, char *thing) {
@@ -78,6 +72,8 @@ void	ft_error(int num, char *thing) {
 		ft_printf("\n\nERROR | The provided PID parameter is not an integer. Pls... \n");
 }
 
+// todo -- receiver of the single signal, which then prints the PROCESS ID of the SENDER
+
 void	receiver()
 {
 
@@ -88,6 +84,8 @@ int	main(int argc, char **argv)
 	int		pid;
 	char	*str_send;
 	int		i;
+	char	*len;
+	char	*msg;
 
 	if (argc != 3 || !(argv[1][0] > 47 && argv[1][0] < 58))
 	{
@@ -97,9 +95,11 @@ int	main(int argc, char **argv)
 	pid = ft_atoi(argv[1]);
 	str_send = argv[2];
 	i = 0;
-	while (str_send[i])
+	len = ft_itoa(county(str_send));
+	msg = ft_strjoin(len, (ft_strjoin("|||", str_send)));
+	while (msg[i])
 	{
-		send_signal(pid, str_send);
+		send_signal(pid, (unsigned char) msg[i]);
 		i++;
 	}
 	ft_printf("CLIENT | Sending %d symbols:\nCLIENT | %s", i, argv[2]);
